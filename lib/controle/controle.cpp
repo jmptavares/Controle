@@ -1,0 +1,31 @@
+#include "controle.h"
+
+static int mapearComDeadband(int valor, bool inverter) {
+  int resultado = 127;
+
+  if (valor >= 2200) {
+    resultado = map(valor, 2200, 4095, 127, 254);
+  } else if (valor <= 1800) {
+    resultado = map(valor, 1800, 0, 127, 0);
+  } else {
+    resultado = 127; // Zona morta central
+  }
+
+  return inverter ? (254 - resultado) : resultado;
+}
+
+void inicializarJoystick() {
+  pinMode(SWITCH_PIN, INPUT_PULLUP);
+}
+
+PacketDadosEnviados lerEstadoJoystick() {
+  PacketDadosEnviados dados;
+  
+  dados.xAxisValue = mapearComDeadband(analogRead(X_AXIS_PIN), false);
+  dados.yAxisValue = mapearComDeadband(analogRead(Y_AXIS_PIN), false);
+  
+  // Detecção do botão pressionado
+  dados.switchPressed = (digitalRead(SWITCH_PIN) == LOW);
+
+  return dados;
+}
