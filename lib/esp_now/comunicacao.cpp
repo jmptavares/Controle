@@ -2,6 +2,7 @@
 #include <WiFi.h>
 #include <esp_now.h> // Biblioteca nativa do SDK
 #include "comunicacao.h"
+#include <esp_wifi.h>
 
 static uint8_t macRobo[] = {0x1C, 0xC3, 0xAB, 0xD2, 0xD3, 0x80};
 
@@ -37,6 +38,7 @@ static void aoEnviarDados(const uint8_t *mac, esp_now_send_status_t status) {
 
 void inicializarComunicacaoControle() {
   WiFi.mode(WIFI_STA);
+   esp_wifi_set_channel(1, WIFI_SECOND_CHAN_NONE); //Configura o canal do WiFi para 1
 
   if (esp_now_init() != ESP_OK) {
     Serial.println("Erro ao inicializar ESP-NOW no controle!");
