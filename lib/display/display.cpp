@@ -3,19 +3,18 @@
 #include <LiquidCrystal_I2C.h>
 #include "define.h"
 
-// Endereço I2C comum para o módulo PCF8574 (normalmente 0x27 ou 0x3F)
+// Endereço I2C pro módulo PCF8574 (normalmente 0x27 ou 0x3F)
 // 16 colunas x 2 linhas
 static LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 void inicializarDisplay() {
-  // Inicializa I2C nos pinos definidos no define.h (SDA 21, SCL 22)
+  // Inicializa I2C nos pinos definidos no define.h
   Wire.begin(SDA_PIN, SCL_PIN);
   
   lcd.init();
   lcd.backlight();
   lcd.clear();
 
-  // Tela de boas-vindas
   lcd.setCursor(0, 0);
   lcd.print("Controle Robo");
   lcd.setCursor(0, 1);
@@ -25,22 +24,20 @@ void inicializarDisplay() {
 }
 
 void atualizarDisplay(int distanciaCM, bool modoProporcional) {
-  // Linha 0: Modo de Operação
   lcd.setCursor(0, 0);
-  lcd.print("Modo: ");
+  lcd.print("Distância: ");
   if (modoProporcional) {
     lcd.print("Proporcional");
   } else {
     lcd.print("Simples     ");
   }
 
-  // Linha 1: Telemetria do Ultrassônico
   lcd.setCursor(0, 1);
   lcd.print("Dist: ");
   if (distanciaCM >= 999 || distanciaCM <= 0) {
     lcd.print("--- cm   ");
   } else {
-    // Imprime a distância formatada
+    // Imprime a distância
     lcd.print(distanciaCM);
     lcd.print(" cm    ");
   }

@@ -20,9 +20,18 @@ void inicializarJoystick() {
 
 PacketDadosEnviados lerEstadoJoystick() {
   PacketDadosEnviados dados;
-  
-  dados.xAxisValue = mapearComDeadband(analogRead(X_AXIS_PIN), false);
-  dados.yAxisValue = mapearComDeadband(analogRead(Y_AXIS_PIN), false);
+
+  int xBruto = analogRead(X_AXIS_PIN);
+  dados.xAxisValue = mapearComDeadband(xBruto, false);
+  int yBruto = analogRead(Y_AXIS_PIN);
+  dados.yAxisValue = mapearComDeadband(yBruto, false);
+
+  static unsigned long ultimaImpressao = 0;
+  if (millis() - ultimaImpressao >= 250) {
+    ultimaImpressao = millis();
+    Serial.printf("X bruto=%d, mapeado=%u | Y bruto=%d, mapeado=%u\n",
+                  xBruto, dados.xAxisValue, yBruto, dados.yAxisValue);
+  }
   
   // Detecção do botão pressionado
   dados.switchPressed = (digitalRead(SWITCH_PIN) == LOW);
