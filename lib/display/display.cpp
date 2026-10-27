@@ -25,15 +25,9 @@ void inicializarDisplay() {
 
 void atualizarDisplay(int distanciaCM, bool modoProporcional) {
   lcd.setCursor(0, 0);
-  lcd.print("Distância: ");
-  if (modoProporcional) {
-    lcd.print("Proporcional");
-  } else {
-    lcd.print("Simples     ");
-  }
+  lcd.print("Distancia: ");
 
   lcd.setCursor(0, 1);
-  lcd.print("Dist: ");
   if (distanciaCM >= 999 || distanciaCM <= 0) {
     lcd.print("--- cm   ");
   } else {
