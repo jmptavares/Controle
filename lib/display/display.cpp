@@ -3,12 +3,9 @@
 #include <LiquidCrystal_I2C.h>
 #include "define.h"
 
-// Endereço I2C pro módulo PCF8574 (normalmente 0x27 ou 0x3F)
-// 16 colunas x 2 linhas
 static LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 void inicializarDisplay() {
-  // Inicializa I2C nos pinos definidos no define.h
   Wire.begin(SDA_PIN, SCL_PIN);
   
   lcd.init();

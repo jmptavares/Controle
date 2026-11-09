@@ -12,7 +12,7 @@ static bool estadoEnvioConhecido = false;
 static esp_now_send_status_t ultimoEstadoEnvio;
 static unsigned long ultimoErroEnvioImpresso = 0;
 
-// Callback para receber a telemetria do robô (v2.x)
+
 static void aoReceberDados(const uint8_t *mac, const uint8_t *incomingData, int len) {
   if (len < sizeof(PacketTelemetria)) return;
 
@@ -21,8 +21,7 @@ static void aoReceberDados(const uint8_t *mac, const uint8_t *incomingData, int 
   distanciaRecebidaRobo = telemetria.distanciaCM;
 }
 
-// Confirma a entrega do pacote ao nível MAC; não confirma que o programa
-// receptor processou o comando.
+
 static void aoEnviarDados(const uint8_t *mac, esp_now_send_status_t status) {
   if (!estadoEnvioConhecido || status != ultimoEstadoEnvio) {
     if (status == ESP_NOW_SEND_SUCCESS) {
@@ -50,13 +49,11 @@ void inicializarComunicacaoControle() {
     return;
   }
 
-  // Registra callback de recepção
   if (esp_now_register_recv_cb(aoReceberDados) != ESP_OK) {
     Serial.println("Erro ao registrar callback de recepcao ESP-NOW!");
     return;
   }
 
-  // Registra o robô como peer
   esp_now_peer_info_t peerInfo = {};
   memcpy(peerInfo.peer_addr, macRobo, 6);
   peerInfo.channel = 0;

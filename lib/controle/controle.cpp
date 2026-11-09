@@ -33,7 +33,6 @@ PacketDadosEnviados lerEstadoJoystick() {
                   xBruto, dados.xAxisValue, yBruto, dados.yAxisValue);
   }
   
-  // Detecção do botão pressionado
   dados.switchPressed = (digitalRead(SWITCH_PIN) == LOW);
 
   return dados;

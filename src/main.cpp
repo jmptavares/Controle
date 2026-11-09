@@ -15,7 +15,6 @@ void setup() {
 }
 
 void loop() {
-  // 1. Envia o joystick para o robô a cada 50ms
   static unsigned long ultimoEnvio = 0;
   if (millis() - ultimoEnvio >= 50) {
     ultimoEnvio = millis();
@@ -24,7 +23,6 @@ void loop() {
     enviarDadosRobo(dados);
   }
 
-  // 2. Atualiza o display LCD 16x2 a cada 200ms
   static unsigned long ultimaAtualizacaoDisplay = 0;
   if (millis() - ultimaAtualizacaoDisplay >= 200) {
     ultimaAtualizacaoDisplay = millis();
