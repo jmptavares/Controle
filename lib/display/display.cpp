@@ -5,6 +5,8 @@
 
 static LiquidCrystal_I2C lcd(0x27, 16, 2);
 
+bool modoSimples = true; 
+
 void inicializarDisplay() {
   Wire.begin(SDA_PIN, SCL_PIN);
   
@@ -18,9 +20,9 @@ void inicializarDisplay() {
   lcd.print("Iniciando...");
   delay(1000);
   lcd.clear();
-}
+} 
 
-void atualizarDisplay(int distanciaCM, bool modoProporcional) {
+void atualizarDisplay(int distanciaCM, bool modoSimples) {
   lcd.setCursor(0, 0);
   lcd.print("Distancia: ");
 

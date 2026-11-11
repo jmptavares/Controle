@@ -28,6 +28,6 @@ void loop() {
     ultimaAtualizacaoDisplay = millis();
 
     int distancia = obterUltimaDistanciaRecebida();
-    atualizarDisplay(distancia, false); // Passa a distância lida para a tela
+    atualizarDisplay(distancia, false);
   }
 }

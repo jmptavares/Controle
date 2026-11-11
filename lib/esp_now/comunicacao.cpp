@@ -4,7 +4,7 @@
 #include "comunicacao.h"
 #include <esp_wifi.h>
 
-static uint8_t macRobo[] = {0x1C, 0xC3, 0xAB, 0xD2, 0xD3, 0x80};
+static uint8_t macRobo[] = {0x1C, 0xC3, 0xAB, 0xD2, 0xD3, 0x80}; // 1C:C3:AB:D2:D3:80
 
 static int distanciaRecebidaRobo = 0;
 static bool comunicacaoPronta = false;
