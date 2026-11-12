@@ -4,43 +4,49 @@
 #include "comunicacao.h"
 #include <esp_wifi.h>
 
-static uint8_t macRobo[] = {0x1C, 0xC3, 0xAB, 0xD2, 0xD3, 0x80}; // 1C:C3:AB:D2:D3:80
+static uint8_t macRobo[] = {0x1C, 0xC3, 0xAB, 0xD2, 0xD3, 0x80}; // Endereço MAC do carrinho
 
+// Variáveis privadas para armazenar o estado da comunicação e a última distância recebida do carrinho
 static int distanciaRecebidaRobo = 0;
+static volatile unsigned long ultimaTelemetriaRecebida = 0;
+static volatile bool telemetriaRecebida = false;
 static bool comunicacaoPronta = false;
 static bool estadoEnvioConhecido = false;
 static esp_now_send_status_t ultimoEstadoEnvio;
-static unsigned long ultimoErroEnvioImpresso = 0;
+static unsigned long ultimoErroEnvioImpresso = 0; 
 
-
+// Callback que é chamado quando o controle recebe dados do carrinho
 static void aoReceberDados(const uint8_t *mac, const uint8_t *incomingData, int len) {
-  if (len < sizeof(PacketTelemetria)) return;
+  if (len < sizeof(PacketTelemetria)) return; 
 
-  PacketTelemetria telemetria;
-  memcpy(&telemetria, incomingData, sizeof(telemetria));
-  distanciaRecebidaRobo = telemetria.distanciaCM;
+  PacketTelemetria telemetria; 
+  memcpy(&telemetria, incomingData, sizeof(telemetria)); 
+  distanciaRecebidaRobo = telemetria.distanciaCM; // Atualiza a distância recebida do carrinho
+  ultimaTelemetriaRecebida = millis();
+  telemetriaRecebida = true;
 }
 
-
-static void aoEnviarDados(const uint8_t *mac, esp_now_send_status_t status) {
-  if (!estadoEnvioConhecido || status != ultimoEstadoEnvio) {
-    if (status == ESP_NOW_SEND_SUCCESS) {
+// Callback que é chamado quando o controle envia dados para o carrinho
+static void aoEnviarDados(const uint8_t *mac, esp_now_send_status_t status) { 
+  if (!estadoEnvioConhecido || status != ultimoEstadoEnvio) { 
+    if (status == ESP_NOW_SEND_SUCCESS) { 
       Serial.println("ESP-NOW: entrega confirmada pelo receptor.");
     } else {
       Serial.println("ESP-NOW: falha na entrega ao receptor.");
     }
 
-    ultimoEstadoEnvio = status;
+    ultimoEstadoEnvio = status; 
     estadoEnvioConhecido = true;
   }
 }
 
+// Inicializa o Wi-Fi em modo estação e configura o ESP-NOW
 void inicializarComunicacaoControle() {
   WiFi.mode(WIFI_STA);
    esp_wifi_set_channel(1, WIFI_SECOND_CHAN_NONE); //Configura o canal do WiFi para 1
 
   if (esp_now_init() != ESP_OK) {
-    Serial.println("Erro ao inicializar ESP-NOW no controle!");
+    Serial.println("Erro ao inicializar ESP-NOW no controle!"); // Se houver, informa algum erro no monitor serial
     return;
   }
 
@@ -54,12 +60,12 @@ void inicializarComunicacaoControle() {
     return;
   }
 
-  esp_now_peer_info_t peerInfo = {};
-  memcpy(peerInfo.peer_addr, macRobo, 6);
+  esp_now_peer_info_t peerInfo = {}; // Estrutura para armazenar informações do carrinho
+  memcpy(peerInfo.peer_addr, macRobo, 6); 
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
 
-  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
+  if (esp_now_add_peer(&peerInfo) != ESP_OK) { // Adiciona o carrinho como peer 
     Serial.println("Erro ao adicionar o Robô como Peer!");
   } else {
     comunicacaoPronta = true;
@@ -67,17 +73,23 @@ void inicializarComunicacaoControle() {
   }
 }
 
+// Envia os dados do controle para o carrinho via ESP-NOW
 void enviarDadosRobo(PacketDadosEnviados dados) {
-  if (!comunicacaoPronta) return;
+  if (!comunicacaoPronta) return; 
 
-  esp_err_t resultado = esp_now_send(macRobo, (uint8_t *)&dados, sizeof(dados));
-  if (resultado != ESP_OK && millis() - ultimoErroEnvioImpresso >= 1000) {
-    Serial.print("Erro ao enfileirar envio ESP-NOW. Codigo: ");
-    Serial.println(static_cast<int>(resultado));
-    ultimoErroEnvioImpresso = millis();
+  esp_err_t resultado = esp_now_send(macRobo, (uint8_t *)&dados, sizeof(dados)); 
+  if (resultado != ESP_OK && millis() - ultimoErroEnvioImpresso >= 1000) { 
+    Serial.print("Erro ao enfileirar envio ESP-NOW. Codigo: "); 
+    Serial.println(static_cast<int>(resultado)); 
+    ultimoErroEnvioImpresso = millis(); 
   }
 }
 
-int obterUltimaDistanciaRecebida() {
+// Retorna a última distância recebida do carrinho
+int obterUltimaDistanciaRecebida() { 
   return distanciaRecebidaRobo;
+}
+
+bool telemetriaDisponivel() {
+  return telemetriaRecebida && millis() - ultimaTelemetriaRecebida < 1000;
 }

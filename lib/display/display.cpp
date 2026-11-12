@@ -3,10 +3,9 @@
 #include <LiquidCrystal_I2C.h>
 #include "define.h"
 
-static LiquidCrystal_I2C lcd(0x27, 16, 2);
+static LiquidCrystal_I2C lcd(0x27, 16, 2); // Endereco I2C do display, 16 colunas e 2 linhas
 
-bool modoSimples = true; 
-
+// Inicializa o LCD e mostra a mensagem de início antes de limpar a tela
 void inicializarDisplay() {
   Wire.begin(SDA_PIN, SCL_PIN);
   
@@ -22,20 +21,21 @@ void inicializarDisplay() {
   lcd.clear();
 } 
 
-void atualizarDisplay(int distanciaCM, bool modoSimples) {
+// Atualiza o LCD com a distancia indicada
+void atualizarDisplay(int distanciaCM) {
   lcd.setCursor(0, 0);
   lcd.print("Distancia: ");
 
   lcd.setCursor(0, 1);
   if (distanciaCM >= 999 || distanciaCM <= 0) {
-    lcd.print("--- cm   ");
+    lcd.print("--- cm   "); //Distancias menores ou iguais a zero e maiores ou iguais a 999 sao exibidas como indisponíveis
   } else {
-    // Imprime a distância
     lcd.print(distanciaCM);
     lcd.print(" cm    ");
   }
 }
 
+// Mostra uma mensagem de erro de conexão no LCD caso o controle não esteja recebendo dados do carrinho
 void exibirMensagemSemSinal() {
   lcd.setCursor(0, 0);
   lcd.print(" STATUS: ERRO   ");
